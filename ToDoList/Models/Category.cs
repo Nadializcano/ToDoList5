@@ -161,29 +161,51 @@ namespace ToDoList.Models
               conn.Dispose();
           }
         }
-        public void AddItem(Item newItem)
-         {
-           MySqlConnection conn = DB.Connection();
-           conn.Open();
-           var cmd = conn.CreateCommand() as MySqlCommand;
-           cmd.CommandText = @"INSERT INTO categories_items (category_id, item_id) VALUES (@CategoryId, @ItemId);";
-           MySqlParameter category_id = new MySqlParameter();
-           category_id.ParameterName = "@CategoryId";
-           category_id.Value = _id;
-           cmd.Parameters.Add(category_id);
-           MySqlParameter item_id = new MySqlParameter();
-           item_id.ParameterName = "@ItemId";
-           item_id.Value = newItem.GetId();
-           cmd.Parameters.Add(item_id);
-           cmd.ExecuteNonQuery();
-           conn.Close();
-           if (conn != null)
-           {
-             conn.Dispose();
-           }
-         }
+        // public void AddItem(Item newItem)
+        //  {
+        //    MySqlConnection conn = DB.Connection();
+        //    conn.Open();
+        //    var cmd = conn.CreateCommand() as MySqlCommand;
+        //    cmd.CommandText = @"INSERT INTO categories_items (category_id, item_id) VALUES (@CategoryId, @ItemId);";
+        //    MySqlParameter category_id = new MySqlParameter();
+        //    category_id.ParameterName = "@CategoryId";
+        //    category_id.Value = _id;
+        //    cmd.Parameters.Add(category_id);
+        //    MySqlParameter item_id = new MySqlParameter();
+        //    item_id.ParameterName = "@ItemId";
+        //    item_id.Value = newItem.GetId();
+        //    cmd.Parameters.Add(item_id);
+        //    cmd.ExecuteNonQuery();
+        //    conn.Close();
+        //    if (conn != null)
+        //    {
+        //      conn.Dispose();
+        //    }
+        //  }
+        public void Edit(string newName)
+        {
+          MySqlConnection conn = DB.Connection();
+          conn.Open();
+          var cmd = conn.CreateCommand() as MySqlCommand;
+          cmd.CommandText = @"UPDATE category SET name = @newName WHERE id = @searchId;";
+          MySqlParameter searchId = new MySqlParameter();
+          searchId.ParameterName = "@searchId";
+          searchId.Value = _id;
+          cmd.Parameters.Add(searchId);
+          MySqlParameter name = new MySqlParameter();
+          name.ParameterName = "@newName";
+          name.Value = newName;
+          cmd.Parameters.Add(name);
+          cmd.ExecuteNonQuery();
+          _name = newName;
+          conn.Close();
+          if (conn != null)
+          {
+            conn.Dispose();
+          }
 
-         
+        }
+
 
 
   }
