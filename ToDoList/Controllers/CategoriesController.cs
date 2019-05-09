@@ -66,16 +66,16 @@ namespace ToDoList.Controllers
         Category category = Category.Find(categoryId);
         model.Add("category", category);
         Item item = Item.Find(itemId);
-        model.Add("item", item);
+        model.Add("items", item);
         return View(model);
       }
     [HttpPost("/categories/{categoryId}")]
-      public ActionResult Update(int categoryId, int itemId, string newName)
+      public ActionResult Update(int categoryId, string newName, int itemId)
       {
         Item item = Item.Find(itemId);
-        item.Edit(newName);
         Dictionary<string, object> model = new Dictionary<string, object>();
         Category category = Category.Find(categoryId);
+        category.Edit(newName);
         model.Add("category", category);
         model.Add("items", item);
         return View("Show", model);
