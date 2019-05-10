@@ -1,6 +1,7 @@
 @using ToDoList.Models;
 
-<h3>Here are all of the items in this category: @Model["category"].GetName()</h3>
+<h3>Here are all of the items in this category:</h3>
+
 <ol>
     @foreach (Item item in @Model["items"])
     {
@@ -8,6 +9,8 @@
     }
 </ol>
 <p><a href='/categories/@Model["category"].GetId()/items/new'>Add a new item</a></p>
+<form action="/categories/@Model["category"].GetId()/delete" method="post">
+  <button type="submit" name="button">Delete the category</button>
+</form>
 <p><a href='/categories'>Return to category list.</a></p>
 <p><a href='/'>Return to Main page</a></p>
-<a href='/categories/@Model["category"].GetId()/edit'>Edit this Category</a>

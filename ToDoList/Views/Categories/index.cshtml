@@ -12,6 +12,8 @@
   @foreach (Category category in Model)
   {
     <li><a href='/categories/@category.GetId()'>@category.GetName()</a></li>
+
+    <button class="btn btn-sm" ><a href='/categories/@category.GetId()/edit'>Edit</a></button>
   }
 }
 

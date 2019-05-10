@@ -41,12 +41,12 @@ namespace ToDoList.Controllers
       return View("Show", model);
     }
     [HttpGet("/categories/{id}")]
-    public ActionResult Show(int itemId, int categoryId)
+    public ActionResult Show(int id)
     {
         Dictionary<string, object> model = new Dictionary<string, object>();
-        Category selectedCategory = Category.Find(categoryId);
+        Category selectedCategory = Category.Find(id);
         List<Item> categoryItems = selectedCategory.GetItems();
-        Item item = Item.Find(itemId);
+        //Item item = Item.Find(itemId);
 
         model.Add("category", selectedCategory);
         model.Add("items", categoryItems);
@@ -56,29 +56,36 @@ namespace ToDoList.Controllers
     public ActionResult Delete()
     {
         Category.ClearAll();
+        Item.ClearAll();
         return View();
     }
 
     [HttpGet("/categories/{categoryId}/edit")]
-      public ActionResult Edit(int categoryId, int itemId)
+      public ActionResult Edit(int categoryId)
       {
-        Dictionary<string, object> model = new Dictionary<string, object>();
         Category category = Category.Find(categoryId);
-        model.Add("category", category);
-        Item item = Item.Find(itemId);
-        model.Add("items", item);
-        return View(model);
+        return View(category);
       }
-    [HttpPost("/categories/{categoryId}")]
-      public ActionResult Update(int categoryId, string newName, int itemId)
+    [HttpPost("/categories/{categoryId}/update")]
+      public ActionResult Update(int categoryId, string newName)
       {
-        Item item = Item.Find(itemId);
-        Dictionary<string, object> model = new Dictionary<string, object>();
         Category category = Category.Find(categoryId);
         category.Edit(newName);
-        model.Add("category", category);
-        model.Add("items", item);
-        return View("Show", model);
+        List<Category> allCategories = Category.GetAll();
+        return View("Index", allCategories);
       }
+
+    [ActionName("Destroy"), HttpPost("/categories/{id}/delete")]
+    public ActionResult Destroy(int id)
+    {
+      Category category = Category.Find(id);
+      List<Item> categoryItems = category.GetItems();
+      foreach(Item item in categoryItems)
+      {
+        item.Delete();
+      }
+      category.Delete();
+      return RedirectToAction("Index");
+    }
   }
 }

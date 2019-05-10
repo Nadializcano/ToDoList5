@@ -18,6 +18,7 @@ namespace ToDoList.Models
       {
           return _name;
       }
+
       public int GetId()
       {
           return _id;
@@ -182,12 +183,12 @@ namespace ToDoList.Models
         //      conn.Dispose();
         //    }
         //  }
-        public void Edit(string newName, string description)
+        public void Edit(string newName)
         {
           MySqlConnection conn = DB.Connection();
           conn.Open();
           var cmd = conn.CreateCommand() as MySqlCommand;
-          cmd.CommandText = @"UPDATE category SET name = @newName WHERE id = @searchId; @UPDATE items SET @description WHERE id = @itemId;";
+          cmd.CommandText = @"UPDATE categories SET name = @newName WHERE id = @searchId;";
           MySqlParameter searchId = new MySqlParameter();
           searchId.ParameterName = "@searchId";
           searchId.Value = _id;
@@ -196,14 +197,6 @@ namespace ToDoList.Models
           name.ParameterName = "@newName";
           name.Value = newName;
           cmd.Parameters.Add(name);
-          // MySqlParameter itemId = new MySqlParameter();
-          // itemId.ParameterName = "@itemId";
-          // itemId.Value = _id;
-          // cmd.Parameters.Add(itemId);
-          // MySqlParameter description = new MySqlParameter();
-          // description.ParameterName = "@description";
-          // description.Value = description;
-          // cmd.Parameters.Add(description);
           cmd.ExecuteNonQuery();
           _name = newName;
           conn.Close();
@@ -213,6 +206,31 @@ namespace ToDoList.Models
           }
 
         }
+
+        public void Delete()
+       {
+         MySqlConnection conn = DB.Connection();
+         conn.Open();
+         var cmd = conn.CreateCommand() as MySqlCommand;
+         cmd.CommandText = @"DELETE FROM categories WHERE id = @categoryId";
+         MySqlParameter categoryId = new MySqlParameter();
+         categoryId.ParameterName = "@categoryId";
+         categoryId.Value = _id;
+         cmd.Parameters.Add(categoryId);
+         // var cmd2 = conn.CreateCommand() as MySqlCommand;
+         // cmd2.CommandText = @"DELETE FROM items WHERE id = @category_Id";
+         // MySqlParameter category_IdParameter = new MySqlParameter();
+         // category_IdParameter.ParameterName = "@category_Id";
+         // category_IdParameter.Value = this.GetId();
+         // cmd.Parameters.Add(category_IdParameter);
+         // cmd2.ExecuteNonQuery();
+         cmd.ExecuteNonQuery();
+         conn.Close();
+         if (conn != null)
+         {
+           conn.Close();
+         }
+       }
 
 
 
