@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System;
+using MySql.Data.MySqlClient;
 using ToDoList.Models;
 
 namespace ToDoList.Tests
@@ -8,17 +9,17 @@ namespace ToDoList.Tests
   [TestClass]
   public class CategoryTest : IDisposable
   {
-    public CategoryTest()
-    {
-      DBConfiguration.ConnectionString = "server=localhost;user id=root;password=root;port=8889;database=to_do_list_test;";
-    }
+  //   public CategoryTest()
+  //   {
+  //     DBConfiguration.ConnectionString = "server=localhost;user id=root;password=root;port=8889;database=ToDoListTest";
+  //   }
 
 
-    public void Dispose()
-    {
-      Item.ClearAll();
-      Category.ClearAll();
-    }
+    // public void Dispose()
+    // {
+    //   Item.ClearAll();
+    //   Category.ClearAll();
+    // }
     // [TestMethod]
     // public void CategoryConstructor_CreatesInstanceOfCategory_Category()
     // {
@@ -80,20 +81,23 @@ namespace ToDoList.Tests
     //     CollectionAssert.AreEqual(newList, actualResult);
     // }
     [TestMethod]
-    public void GetItems_RetrievesAllItemsWithCategory_ItemList()
+    public void GetItems_ReturnsAllCategoryItems_ItemList()
     {
-      //Arrange, Act
+      //Arrange
       Category testCategory = new Category("Household chores");
       testCategory.Save();
-      Item firstItem = new Item("Mow the lawn", testCategory.GetId());
-      firstItem.Save();
-      Item secondItem = new Item("Do the dishes", testCategory.GetId());
-      secondItem.Save();
-      List<Item> testItemList = new List<Item> {firstItem, secondItem};
-      List<Item> resultItemList = testCategory.GetItems();
+      Item testItem1 = new Item("Mow the lawn");
+      testItem1.Save();
+      Item testItem2 = new Item("Buy plane ticket");
+      testItem2.Save();
+
+      //Act
+      testCategory.AddItem(testItem1);
+      List<Item> savedItems = testCategory.GetItems();
+      List<Item> testList = new List<Item> {testItem1};
 
       //Assert
-      CollectionAssert.AreEqual(testItemList, resultItemList);
+      CollectionAssert.AreEqual(testList, savedItems);
     }
     // [TestMethod]
     // public void GetAll_CategoriesEmptyAtFirst_List()
@@ -145,6 +149,44 @@ namespace ToDoList.Tests
     //   //Assert
     //   Assert.AreEqual(testId, result);
     // }
+
+    public void Delete()
+    {
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      var cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = @"DELETE FROM items WHERE id = @ItemId; DELETE FROM categories_items WHERE item_id = @ItemId;";
+      MySqlParameter itemIdParameter = new MySqlParameter();
+      itemIdParameter.ParameterName = "@ItemId";
+      itemIdParameter.Value = this.GetId();
+      cmd.Parameters.Add(itemIdParameter);
+      cmd.ExecuteNonQuery();
+      if (conn != null)
+      {
+        conn.Close();
+      }
+    }
+
+    [TestMethod]
+    public void Test_AddItem_AddsItemToCategory()
+    {
+      //Arrange
+      Category testCategory = new Category("Household chores");
+      testCategory.Save();
+      Item testItem = new Item("Mow the lawn");
+      testItem.Save();
+      Item testItem2 = new Item("Water the garden");
+      testItem2.Save();
+
+      //Act
+      testCategory.AddItem(testItem);
+      testCategory.AddItem(testItem2);
+      List<Item> result = testCategory.GetItems();
+      List<Item> testList = new List<Item>{testItem, testItem2};
+
+      //Assert
+      CollectionAssert.AreEqual(testList, result);
+    }
 
 
   }
